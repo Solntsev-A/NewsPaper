@@ -18,8 +18,12 @@ class Author(models.Model):
         self.save()
 
 
+
 class Category(models.Model):
     name = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return self.name.title()
 
 
 class Post(models.Model):
@@ -48,10 +52,14 @@ class Post(models.Model):
     def preview(self):
         return self.text[0:123] + '...'
 
+    def __str__(self):
+        return self.title.title()
+
 
 class PostCategory(models.Model):
     postInclude = models.ForeignKey(Post, on_delete=models.CASCADE)
     categoryInclude = models.ForeignKey(Category, on_delete=models.CASCADE)
+    unique_together = ('postInclude', 'categoryInclude')
 
 
 class Comment(models.Model):

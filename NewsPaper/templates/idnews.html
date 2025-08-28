@@ -1,0 +1,22 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Новость
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+    <h1>{{ idnews }}</h1>
+        <table>
+            <tr>
+                <td>Заголовок</td>
+                <td>Дата:</td>
+                <td>Текст:</td>
+            </tr>
+            <tr>
+                <td>{{ idnews.title }}</td>
+                <td>{{ idnews.dateCreation|date:'d M Y' }}</td>
+                <td>{{idnews.text}}</td>
+            </tr>
+        </table>
+{% endblock content %}
