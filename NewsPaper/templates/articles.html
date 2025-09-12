@@ -5,14 +5,14 @@
 {% load custom_tags %}
 
 {% block title %}
-News
+Articles
 {% endblock title %}
 
 {% block content %}
-    <h1>Все новости</h1>
-    <h3>Сейчас новостей: {{ news|length }}</h3>
+    <h1>Все статьи</h1>
+    <h3>Сейчас статей: {{ articles|length }}</h3>
     <hr>
-    {% if news%}
+    {% if articles %}
         <table>
             <tr>
                 <td>
@@ -25,19 +25,20 @@ News
                     Превью.
                 </td>
             </tr>
-            {% for idnews in news %}
+            {% for article in articles %}
             <tr>
                 <td>
-                    {{ idnews.title|censor }}
+                    {{ article.title|censor }}
                 </td>
-                <td>{{ idnews.dateCreation|date:'d M Y' }}</td>
-                <td>{{ idnews.text|truncatewords:20|censor }}</td>
+                <td>{{ article.dateCreation|date:'d M Y' }}</td>
+                <td>{{ article.text|truncatewords:20|censor }}</td>
             </tr>
             {% endfor %}
         </table>
     {% else %}
-        <h2>Новостей нет!</h2>
+        <h2>Статей нет!</h2>
     {% endif%}
+
 
     {% if page_obj.has_previous %}
         <a href="?{% url_replace page=1 %}">1</a>
@@ -63,6 +64,4 @@ News
         <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
     {% endif %}
 
-
 {% endblock content %}
-

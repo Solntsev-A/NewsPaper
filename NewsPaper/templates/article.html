@@ -1,0 +1,22 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Статья
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+    <h1>{{ article }}</h1>
+        <table>
+            <tr>
+                <td>Заголовок</td>
+                <td>Дата:</td>
+                <td>Текст:</td>
+            </tr>
+            <tr>
+                <td>{{ article.title }}</td>
+                <td>{{ article.dateCreation|date:'d M Y' }}</td>
+                <td>{{ article.text }}</td>
+            </tr>
+        </table>
+{% endblock content %}
