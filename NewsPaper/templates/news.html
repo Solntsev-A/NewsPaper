@@ -12,6 +12,9 @@ News
     <h1>Все новости</h1>
     <h3>Сейчас новостей: {{ news|length }}</h3>
     <hr>
+    {% if perms.My_News_Portal.add_post %}
+    <a href="{% url 'news_create' %}">Добавить новость</a>
+    {% endif %}
     {% if news%}
         <table>
             <tr>
@@ -24,6 +27,11 @@ News
                 <td>
                     Превью.
                 </td>
+                {% if perms.My_News_Portal.change_news or perms.My_News_Portal.delete_news %}
+                <td>
+                    Действия
+                </td>
+                {% endif %}
             </tr>
             {% for idnews in news %}
             <tr>
@@ -32,6 +40,14 @@ News
                 </td>
                 <td>{{ idnews.dateCreation|date:'d M Y' }}</td>
                 <td>{{ idnews.text|truncatewords:20|censor }}</td>
+                <td>
+                    {% if perms.My_News_Portal.change_news %}
+                    <a href="{% url 'news_update' idnews.id %}">Изменить</a>
+                    {% endif %}
+                    {% if perms.My_News_Portal.delete_news %}
+                    <a href="{% url 'news_delete' idnews.id %}">Удалить</a>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </table>

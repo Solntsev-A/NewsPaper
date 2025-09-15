@@ -12,6 +12,9 @@ Articles
     <h1>Все статьи</h1>
     <h3>Сейчас статей: {{ articles|length }}</h3>
     <hr>
+    {% if perms.My_News_Portal.add_post %}
+    <a href="{% url 'article_create' %}">Добавить статью</a>
+    {% endif %}
     {% if articles %}
         <table>
             <tr>
@@ -24,6 +27,11 @@ Articles
                 <td>
                     Превью.
                 </td>
+                {% if perms.My_News_Portal.change_article or perms.My_News_Portal.delete_article %}
+                <td>
+                    Действия
+                </td>
+                {% endif %}
             </tr>
             {% for article in articles %}
             <tr>
@@ -32,6 +40,14 @@ Articles
                 </td>
                 <td>{{ article.dateCreation|date:'d M Y' }}</td>
                 <td>{{ article.text|truncatewords:20|censor }}</td>
+                <td>
+                    {% if perms.My_News_Portal.change_article %}
+                    <a href="{% url 'article_update' article.id %}">Изменить</a>
+                    {% endif %}
+                    {% if perms.My_News_Portal.delete_news %}
+                    <a href="{% url 'article_delete' article.id %}">Удалить</a>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </table>
