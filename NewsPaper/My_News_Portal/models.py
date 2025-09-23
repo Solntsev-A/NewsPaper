@@ -9,12 +9,10 @@ class Author(models.Model):
 
     def update_rating(self):
         postRat = self.post_set.aggregate(postRating=Sum('rating'))
-        pRat = 0
-        pRat += postRat.get('postRating')
+        pRat = postRat.get('postRating') or 0
 
         commentRat = self.authorUser.comment_set.aggregate(commentRating=Sum('rating'))
-        cRat = 0
-        cRat += commentRat.get('commentRating')
+        cRat = commentRat.get('commentRating') or 0
         self.ratingAuthor = pRat * 3 + cRat
         self.save()
 
@@ -85,3 +83,16 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+    )
+    category = models.ForeignKey(
+        to='Category',
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+    )
