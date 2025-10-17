@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -187,3 +189,16 @@ SERVER_EMAIL = "example@yandex.ru"
 ADMINS = (
     ('anton', 'anton@yandex.ru'),
 )
+
+CELERY_BROKER_URL = os.getenv('REDIS_URL')
+CELERY_RESULT_BACKEND = os.getenv('REDIS_URL')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULE = {
+    'weekly_newsletter': {
+        'task': 'My_News_Portal.tasks.send_weekly_newsletter',
+        'schedule': crontab(hour=8, minute=0, day_of_week=1),
+    },
+}
