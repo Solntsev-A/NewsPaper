@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
+from django.core.cache import cache
 
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -25,6 +26,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name.title()
+
 
 
 class Post(models.Model):
@@ -61,6 +63,11 @@ class Post(models.Model):
             return reverse('news_detail', args=[str(self.pk)])
         elif self.categoryType == 'AR':
             return reverse('article_detail', args=[str(self.pk)])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # очищаем кэш после сохранения поста
+        cache.delete(f'post-{self.pk}')
 
 
 class PostCategory(models.Model):

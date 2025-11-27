@@ -202,3 +202,10 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(hour=8, minute=0, day_of_week=1),
     },
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}

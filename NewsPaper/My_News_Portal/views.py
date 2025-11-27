@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Exists, OuterRef
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
+from django.core.cache import cache
 
 
 class PostsList(ListView):
@@ -26,6 +27,16 @@ class PostDetail(DetailView):
     template_name = "idnews.html"
     context_object_name = "idnews"
 
+    def get_object(self, *args, **kwargs):
+        pk = self.kwargs["pk"]
+        cache_key = f'post-{pk}'
+
+        obj = cache.get(cache_key)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(cache_key, obj)
+        return obj
+
 
 class PostArticlesList(ListView):
     queryset = Post.objects.filter(
@@ -42,6 +53,16 @@ class PostArticlesDetail(DetailView):
     )
     template_name = "article.html"
     context_object_name = "article"
+
+    def get_object(self, *args, **kwargs):
+        pk = self.kwargs["pk"]
+        cache_key = f'post-{pk}'
+
+        obj = cache.get(cache_key)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(cache_key, obj)
+        return obj
 
 
 class PostSearchList(ListView):
@@ -141,3 +162,5 @@ def subscriptions(request):
         'subscriptions.html',
         {'categories': categories_with_subscriptions},
     )
+
+
