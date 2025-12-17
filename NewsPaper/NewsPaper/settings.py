@@ -15,6 +15,8 @@ import os
 
 from celery.schedules import crontab
 from dotenv import load_dotenv
+from django.utils.log import RequireDebugTrue, RequireDebugFalse
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -207,5 +209,121 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'simple': {
+            'format': '%(asctime)s | %(levelname)s | %(message)s',
+        },
+        'with_module': {
+            'format': '%(asctime)s | %(levelname)s | %(module)s | %(message)s',
+        },
+        'with_path': {
+            'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
+        },
+        'full_error': {
+            'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': RequireDebugTrue,
+        },
+        'require_debug_false': {
+            '()': RequireDebugFalse,
+        },
+    },
+
+    'handlers': {
+
+        # Консоль
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'formatter': 'simple',
+        },
+
+        # general.log
+        'general_file': {
+            'class': 'logging.FileHandler',
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'filename': 'logs/general.log',
+            'formatter': 'with_module',
+        },
+
+        # errors.log
+        'errors_file': {
+            'class': 'logging.FileHandler',
+            'level': 'ERROR',
+            'filename': 'logs/errors.log',
+            'formatter': 'full_error',
+        },
+
+        # security.log
+        'security_file': {
+            'class': 'logging.FileHandler',
+            'level': 'INFO',
+            'filename': 'logs/security.log',
+            'formatter': 'with_module',
+        },
+
+        # Почта
+        'mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'formatter': 'with_path',
+        },
+    },
+    'loggers': {
+
+        # Основной логгер Django
+        'django': {
+            'handlers': ['console', 'general_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+
+        # Ошибки запросов
+        'django.request': {
+            'handlers': ['errors_file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+        # Серверные ошибки
+        'django.server': {
+            'handlers': ['errors_file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+        # Ошибки шаблонов
+        'django.template': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+        # Ошибки БД
+        'django.db.backends': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+        # Безопасность
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     }
 }
