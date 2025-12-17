@@ -1,8 +1,51 @@
 from django.contrib import admin
-from .models import Author, Category, Post
+from .models import Author, Category, Post, PostCategory
 
 
+class PostCategoryInline(admin.TabularInline):
+    model = PostCategory
+    extra = 1
 
-admin.site.register(Author)
-admin.site.register(Category)
-admin.site.register(Post)
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'author',
+        'categoryType',
+        'dateCreation',
+        'rating',
+    )
+
+    list_filter = (
+        'categoryType',
+        'dateCreation',
+        'author',
+    )
+
+    search_fields = (
+        'title',
+        'text',
+    )
+
+    ordering = ('-dateCreation',)
+
+    list_per_page = 10
+
+    readonly_fields = ('dateCreation',)
+
+    inlines = [PostCategoryInline]
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    ordering = ('name',)
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('authorUser', 'ratingAuthor')
+    search_fields = ('authorUser__username',)
+    ordering = ('-ratingAuthor',)
