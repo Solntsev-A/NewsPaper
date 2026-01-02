@@ -226,9 +226,12 @@ LOGGING = {
         'with_path': {
             'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
         },
-        'full_error': {
-            'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
+        'with_stack': {
+            'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s\n%(exc_info)s',
         },
+        'mail_error': {
+            'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
+        }
     },
     'filters': {
         'require_debug_true': {
@@ -241,12 +244,26 @@ LOGGING = {
 
     'handlers': {
 
-        # Консоль
-        'console': {
+        # Новый формат для разных уровней
+        'console_debug': {
             'class': 'logging.StreamHandler',
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'formatter': 'simple',
+        },
+
+        'console_warning': {
+            'class': 'logging.StreamHandler',
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'formatter': 'with_path',
+        },
+
+        'console_error': {
+            'class': 'logging.StreamHandler',
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'formatter': 'with_stack',
         },
 
         # general.log
@@ -262,8 +279,9 @@ LOGGING = {
         'errors_file': {
             'class': 'logging.FileHandler',
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'filename': 'logs/errors.log',
-            'formatter': 'full_error',
+            'formatter': 'with_stack',
         },
 
         # security.log
@@ -279,16 +297,17 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'formatter': 'with_path',
+            'formatter': 'mail_error',
         },
     },
     'loggers': {
 
         # Основной логгер Django
         'django': {
-            'handlers': ['console', 'general_file'],
+            'handlers': ['console_debug', 'console_warning', 'console_error', 'general_file'],
             'level': 'DEBUG',
             'propagate': True,
+
         },
 
         # Ошибки запросов
@@ -296,6 +315,7 @@ LOGGING = {
             'handlers': ['errors_file', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
+
         },
 
         # Серверные ошибки
