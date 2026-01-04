@@ -1,5 +1,8 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -20,7 +23,7 @@
     </head>
     <body id="page-top">
         {% load cache %}
-        {% cache 30 navigation %}
+        {% cache 30 navigation LANGUAGE_CODE %}
         <!-- Navigation-->
             <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
                 <div class="container px-4 px-lg-5">
@@ -33,12 +36,25 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarResponsive">
                         <ul class="navbar-nav ms-auto">
-                            <li class="nav-item active"><a class="nav-link" href="">home<span class="sr-only">(current)</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/news/">Новости</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/articles/">Статьи</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/news/search/">Поиск</a></li>
+                            <li class="nav-item active"><a class="nav-link" href="">{% trans "Home" %}<span class="sr-only">(current)</span></a></li>
+                            <li class="nav-item"><a class="nav-link" href="/news/">{% trans "News" %}</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/articles/">{% trans "Articles" %}</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/news/search/">{% trans "Search" %}</a></li>
                         </ul>
                     </div>
+                    <form action="{% url 'set_language' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+                        <select name="language" onchange="this.form.submit()">
+                            {% get_available_languages as LANGUAGES %}
+                            {% for lang_code, lang_name in LANGUAGES %}
+                                <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
+                                    {{ lang_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
                 </div>
             </nav>
         {% endcache %}
@@ -47,20 +63,20 @@
             <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
                 <div class="d-flex justify-content-center">
                     <div class="text-center">
-                        <h1 class="mx-auto my-0 text-uppercase">Новостной сайт</h1>
+                        <h1 class="mx-auto my-0 text-uppercase">{% trans "News Portal" %}</h1>
                         <h2 class="text-white-50 mx-auto mt-2 mb-5">
                             {% block content %}
                             {{ flatpage.content}}
                             {% endblock content %}</h2>
                         <br>
                         <br>
-                        <a class="btn btn-primary" href="/news/">Вернуться</a>
+                        <a class="btn btn-primary" href="/news/">{% trans "Back" %}</a>
                     </div>
                 </div>
             </div>
         </header>
         <!-- Contact-->
-        {% cache 30 contact %}
+        {% cache 30 contact LANGUAGE_CODE %}
             <section class="contact-section bg-black">
                 <div class="container px-4 px-lg-5">
                     <div class="row gx-4 gx-lg-5">
@@ -70,9 +86,10 @@
                                     <i class="fas fa-map-marked-alt text-primary mb-2"></i>
                                     <h4 class="text-uppercase m-0">Address</h4>
                                     <hr class="my-4 mx-auto" />
-                                    <div class="small text-black-50">Комплекс сверхскоплений (галактическая нить) Рыб-Кита,
-                                        сверхскопление Ланиакея, сверхскопление Девы, скопление Девы, Местная группа галактик,
-                                        галактика Млечный Путь, галактический рукав Ориона, Солнечная система, планета Земля.</div>
+                                    <div class="small text-black-50">{% blocktrans %} The Pisces–Cetus supercluster complex (galactic filament),
+                                        Laniakea Supercluster, Virgo Supercluster, Virgo Cluster,
+                                        Local Group of galaxies, Milky Way galaxy, Orion Arm,
+                                        Solar System, planet Earth. {% endblocktrans %}</div>
                                 </div>
                             </div>
                         </div>
@@ -101,6 +118,6 @@
             </section>
         {% endcache %}
         <!-- Footer-->
-        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">Copyright &copy; Мой сайт 2025</div></footer>
+        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">© 2025 My News Portal</div></footer>
     </body>
 </html>

@@ -4,6 +4,7 @@ from django.db.models import Sum
 from django.urls import reverse
 from django.core.cache import cache
 
+
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
     ratingAuthor = models.IntegerField(default=0)
@@ -26,7 +27,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name.title()
-
 
 
 class Post(models.Model):

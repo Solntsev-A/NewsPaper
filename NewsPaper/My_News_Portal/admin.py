@@ -1,3 +1,4 @@
+from modeltranslation.admin import TranslationAdmin
 from django.contrib import admin
 from .models import Author, Category, Post, PostCategory
 
@@ -8,7 +9,7 @@ class PostCategoryInline(admin.TabularInline):
 
 
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(TranslationAdmin):
     list_display = (
         'title',
         'author',
@@ -38,7 +39,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(TranslationAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     ordering = ('name',)
