@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import PostsList, PostDetail, PostArticlesList, PostArticlesDetail, PostSearchList, NewsCreate, ArticleCreate, NewsUpdate, ArticleUpdate, NewsDelete, ArticleDelete, subscriptions
 from django.views.decorators.cache import cache_page
+from .views import SetTimezoneView
 
 urlpatterns = [
     path('news/', cache_page(60)(PostsList.as_view()), name='news_list'),
@@ -15,4 +16,5 @@ urlpatterns = [
     path('articles/<int:pk>/delete/', ArticleDelete.as_view(), name='article_delete'),
     path('news/search/', PostSearchList.as_view(), name='post_search'),
     path('subscriptions/', subscriptions, name='subscriptions'),
+    path('set-timezone/', SetTimezoneView.as_view(), name='set_timezone'),
 ]

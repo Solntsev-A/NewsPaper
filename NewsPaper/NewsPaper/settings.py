@@ -71,6 +71,9 @@ SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'middlewares.timezone.TimezoneMiddleware',
+
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -96,6 +99,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'My_News_Portal.context_processors.timezone_context',
             ],
         },
     },
@@ -222,141 +226,141 @@ CACHES = {
     }
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-
-    'formatters': {
-        'simple': {
-            'format': '%(asctime)s | %(levelname)s | %(message)s',
-        },
-        'with_module': {
-            'format': '%(asctime)s | %(levelname)s | %(module)s | %(message)s',
-        },
-        'with_path': {
-            'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
-        },
-        'with_stack': {
-            'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s\n%(exc_info)s',
-        },
-        'mail_error': {
-            'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
-        }
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': RequireDebugTrue,
-        },
-        'require_debug_false': {
-            '()': RequireDebugFalse,
-        },
-    },
-
-    'handlers': {
-
-        # Новый формат для разных уровней
-        'console_debug': {
-            'class': 'logging.StreamHandler',
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'formatter': 'simple',
-        },
-
-        'console_warning': {
-            'class': 'logging.StreamHandler',
-            'level': 'WARNING',
-            'filters': ['require_debug_true'],
-            'formatter': 'with_path',
-        },
-
-        'console_error': {
-            'class': 'logging.StreamHandler',
-            'level': 'ERROR',
-            'filters': ['require_debug_true'],
-            'formatter': 'with_stack',
-        },
-
-        # general.log
-        'general_file': {
-            'class': 'logging.FileHandler',
-            'level': 'INFO',
-            'filters': ['require_debug_false'],
-            'filename': 'logs/general.log',
-            'formatter': 'with_module',
-        },
-
-        # errors.log
-        'errors_file': {
-            'class': 'logging.FileHandler',
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'filename': 'logs/errors.log',
-            'formatter': 'with_stack',
-        },
-
-        # security.log
-        'security_file': {
-            'class': 'logging.FileHandler',
-            'level': 'INFO',
-            'filename': 'logs/security.log',
-            'formatter': 'with_module',
-        },
-
-        # Почта
-        'mail_admins': {
-            'class': 'django.utils.log.AdminEmailHandler',
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'formatter': 'mail_error',
-        },
-    },
-    'loggers': {
-
-        # Основной логгер Django
-        'django': {
-            'handlers': ['console_debug', 'console_warning', 'console_error', 'general_file'],
-            'level': 'DEBUG',
-            'propagate': True,
-
-        },
-
-        # Ошибки запросов
-        'django.request': {
-            'handlers': ['errors_file', 'mail_admins'],
-            'level': 'ERROR',
-            'propagate': False,
-
-        },
-
-        # Серверные ошибки
-        'django.server': {
-            'handlers': ['errors_file', 'mail_admins'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-
-        # Ошибки шаблонов
-        'django.template': {
-            'handlers': ['errors_file'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-
-        # Ошибки БД
-        'django.db.backends': {
-            'handlers': ['errors_file'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-
-        # Безопасность
-        'django.security': {
-            'handlers': ['security_file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    }
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#
+#     'formatters': {
+#         'simple': {
+#             'format': '%(asctime)s | %(levelname)s | %(message)s',
+#         },
+#         'with_module': {
+#             'format': '%(asctime)s | %(levelname)s | %(module)s | %(message)s',
+#         },
+#         'with_path': {
+#             'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
+#         },
+#         'with_stack': {
+#             'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s\n%(exc_info)s',
+#         },
+#         'mail_error': {
+#             'format': '%(asctime)s | %(levelname)s | %(pathname)s | %(message)s',
+#         }
+#     },
+#     'filters': {
+#         'require_debug_true': {
+#             '()': RequireDebugTrue,
+#         },
+#         'require_debug_false': {
+#             '()': RequireDebugFalse,
+#         },
+#     },
+#
+#     'handlers': {
+#
+#         # Новый формат для разных уровней
+#         'console_debug': {
+#             'class': 'logging.StreamHandler',
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'formatter': 'simple',
+#         },
+#
+#         'console_warning': {
+#             'class': 'logging.StreamHandler',
+#             'level': 'WARNING',
+#             'filters': ['require_debug_true'],
+#             'formatter': 'with_path',
+#         },
+#
+#         'console_error': {
+#             'class': 'logging.StreamHandler',
+#             'level': 'ERROR',
+#             'filters': ['require_debug_true'],
+#             'formatter': 'with_stack',
+#         },
+#
+#         # general.log
+#         'general_file': {
+#             'class': 'logging.FileHandler',
+#             'level': 'INFO',
+#             'filters': ['require_debug_false'],
+#             'filename': 'logs/general.log',
+#             'formatter': 'with_module',
+#         },
+#
+#         # errors.log
+#         'errors_file': {
+#             'class': 'logging.FileHandler',
+#             'level': 'ERROR',
+#             'filters': ['require_debug_false'],
+#             'filename': 'logs/errors.log',
+#             'formatter': 'with_stack',
+#         },
+#
+#         # security.log
+#         'security_file': {
+#             'class': 'logging.FileHandler',
+#             'level': 'INFO',
+#             'filename': 'logs/security.log',
+#             'formatter': 'with_module',
+#         },
+#
+#         # Почта
+#         'mail_admins': {
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'level': 'ERROR',
+#             'filters': ['require_debug_false'],
+#             'formatter': 'mail_error',
+#         },
+#     },
+#     'loggers': {
+#
+#         # Основной логгер Django
+#         'django': {
+#             'handlers': ['console_debug', 'console_warning', 'console_error', 'general_file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#
+#         },
+#
+#         # Ошибки запросов
+#         'django.request': {
+#             'handlers': ['errors_file', 'mail_admins'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#
+#         },
+#
+#         # Серверные ошибки
+#         'django.server': {
+#             'handlers': ['errors_file', 'mail_admins'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#
+#         # Ошибки шаблонов
+#         'django.template': {
+#             'handlers': ['errors_file'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#
+#         # Ошибки БД
+#         'django.db.backends': {
+#             'handlers': ['errors_file'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#
+#         # Безопасность
+#         'django.security': {
+#             'handlers': ['security_file'],
+#             'level': 'INFO',
+#             'propagate': False,
+#         },
+#     }
+# }
 
 LOCALE_PATHS = [
     BASE_DIR / 'locale',

@@ -1,3 +1,4 @@
+import pytz
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Subscription, Category
 from .filters import PostFilter
@@ -6,14 +7,16 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.db.models import Exists, OuterRef
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from django.core.cache import cache
+from django.views import View
+from django.utils import timezone
 
 
 class PostsList(ListView):
     queryset = Post.objects.filter(
-        categoryType = 'NW'
+        categoryType='NW'
     )
     template_name = "news.html"
     context_object_name = "news"
@@ -112,6 +115,7 @@ class NewsUpdate(PermissionRequiredMixin, UpdateView):
     model = Post
     template_name = 'news_edit.html'
 
+
 class ArticleUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = ('My_News_Portal.change_post',)
     form_class = PostForm
@@ -164,3 +168,9 @@ def subscriptions(request):
     )
 
 
+class SetTimezoneView(View):
+    def post(self, request):
+        timezone = request.POST.get('timezone')
+        if timezone:
+            request.session['django_timezone'] = timezone
+        return redirect(request.META.get('HTTP_REFERER', '/'))

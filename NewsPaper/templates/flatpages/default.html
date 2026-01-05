@@ -1,5 +1,7 @@
+{% load tz %}
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
+{% get_current_timezone as TIME_ZONE %}
 
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
@@ -23,7 +25,7 @@
     </head>
     <body id="page-top">
         {% load cache %}
-        {% cache 30 navigation LANGUAGE_CODE %}
+        {% cache 30 navigation LANGUAGE_CODE TIME_ZONE %}
         <!-- Navigation-->
             <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
                 <div class="container px-4 px-lg-5">
@@ -51,6 +53,16 @@
                             {% for lang_code, lang_name in LANGUAGES %}
                                 <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
                                     {{ lang_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                    <form action="{% url 'set_timezone' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <select name="timezone" onchange="this.form.submit()">
+                            {% for tz in timezones %}
+                                <option value="{{ tz }}" {% if tz == TIME_ZONE %}selected{% endif %}>
+                                    {{ tz }}
                                 </option>
                             {% endfor %}
                         </select>
